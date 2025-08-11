@@ -19,7 +19,7 @@ This repo will showcase:
 
 ## Projects (coming soon)
 
-Stay tuned.
+Healthcare Spending Efficiency: Sweden, Rwanda, and South Africa (2005–2020) - currently loading, stay tuned.
 
 ## Contact
 
