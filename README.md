@@ -17,9 +17,9 @@ This repo will showcase:
 - Real-world projects in finance, healthcare and AI
 - Whatever else I learn along the way!
 
-## Projects (coming soon)
+## Portfolio
 
-Healthcare Spending Efficiency: Sweden, Rwanda, and South Africa (2005–2020) - currently loading, stay tuned.
+Healthcare Spending Efficiency: Sweden, Rwanda, and South Africa (2005–2020): [(Click here)](projects/healthcare/Sweden_Rwanda_ZAR_healthcare.md)
 
 ## Contact
 
