@@ -6,7 +6,7 @@ date: "2025-08-11"
 
 # Executive Summary
 
-**Research question.**
+**Research question:**
 How efficiently do Rwanda, South Africa and Sweden translate health spending into improved population health outcomes from 2005 to 2020, and do any trends emerge during this period?
 
 **Headlines**
