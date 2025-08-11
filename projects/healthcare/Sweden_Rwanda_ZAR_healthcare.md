@@ -46,7 +46,7 @@ How efficiently do Rwanda, South Africa and Sweden translate health spending int
 **Interpretation:**
 Rwanda's early acceleration did not fully persist, which is consistent with donor-cycle effects. South Africa increased gradually, with the GDP share rising faster than per capita spend in some years. Sweden shows sustained, high-level investment.
 
-*![Health expenditure by country, 2005–2020: share of GDP (left) and per-capita spending, US dollars (right).](healthcare/figures/01_spending_trends.png)*  
+*![Health expenditure by country, 2005–2020: share of GDP (left) and per-capita spending, US dollars (right).](figures/01_spending_trends.png)*  
 
 ## 2. Outcome Trends (2005–2020)
 
@@ -63,7 +63,7 @@ Rwanda's early acceleration did not fully persist, which is consistent with dono
 **Interpretation:**
 Rwanda and South Africa achieved substantial improvements. South Africa's gains accelerated after 2010, consistent with expanded access to HIV treatment and broader public health measures. Sweden remained a high-performance baseline with little room for year-to-year improvement.
 
-*![Health outcomes, 2005–2020: infant mortality shown inverted so upward trends indicate improvement; life expectancy at birth (years).](healthcare/figures/02_outcomes_trends.png)*
+*![Health outcomes, 2005–2020: infant mortality shown inverted so upward trends indicate improvement; life expectancy at birth (years).](figures/02_outcomes_trends.png)*
 
 
 ## 3. Spending–Outcome Correlations
@@ -81,9 +81,9 @@ Rwanda and South Africa achieved substantial improvements. South Africa's gains 
 **Interpretation:**
 Negative correlations for life expectancy in Rwanda and South Africa likely reflect timing effects, measurement noise, or reallocation toward lagging areas that do not shift the year's headline metric immediately. Sweden's near-zero correlations are consistent with saturation at high outcome levels.
 
-*![Correlation between annual spending growth and annual outcome change; negative values for infant mortality indicate that higher spending aligns with lower mortality.](healthcare/figures/03_correlation_heatmap.png)*
+*![Correlation between annual spending growth and annual outcome change; negative values for infant mortality indicate that higher spending aligns with lower mortality.](figures/03_correlation_heatmap.png)*
 
-*![Annual percentage change in spending versus change in outcomes by country, with fitted trend lines for each panel.](healthcare/figures/04_spending_vs_outcomes_scatter.png)*
+*![Annual percentage change in spending versus change in outcomes by country, with fitted trend lines for each panel.](figures/04_spending_vs_outcomes_scatter.png)*
 
 ## 4. Efficiency Comparison
 
@@ -95,7 +95,7 @@ Negative correlations for life expectancy in Rwanda and South Africa likely refl
 **Interpretation:**
 Rwanda's efficiency for life expectancy suggests that targeted investment and scale-up of essential services can produce substantial gains even when annual spending–outcome correlations are noisy. South Africa's mixed profile suggests uneven returns across metrics and the influence of disease burdens and service bottlenecks. Sweden illustrates the diminishing returns in mature systems.
 
-*![Efficiency index: outcome improvement per unit increase in spending. Bars show metric-level efficiency; marker size reflects combined magnitude.](healthcare/figures/05_efficiency_index.png)*
+*![Efficiency index: outcome improvement per unit increase in spending. Bars show metric-level efficiency; marker size reflects combined magnitude.](figures/05_efficiency_index.png)*
 
 
 # Policy Implications
