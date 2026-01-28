@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Statistics - SQL Practice Generator{% endblock %}
+
+{% block content %}
+<div class="stats-page">
+    <h1>Your Progress</h1>
+
+    <div class="stats-overview">
+        <div class="stat-card large">
+            <div class="stat-value">{{ stats.total_exercises }}</div>
+            <div class="stat-label">Total Exercises</div>
+        </div>
+        <div class="stat-card large">
+            <div class="stat-value">{{ stats.total_correct }}</div>
+            <div class="stat-label">Correct Answers</div>
+        </div>
+        <div class="stat-card large">
+            <div class="stat-value">{{ stats.accuracy }}%</div>
+            <div class="stat-label">Accuracy</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.current_streak }}</div>
+            <div class="stat-label">Current Streak</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.longest_streak }}</div>
+            <div class="stat-label">Best Streak</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.day_streak }}</div>
+            <div class="stat-label">Day Streak</div>
+        </div>
+    </div>
+
+    <div class="stats-sections">
+        <div class="section skills-section">
+            <h2>Skills Progress</h2>
+            <div class="skills-list">
+                {% for skill in stats.skills %}
+                <div class="skill-row {% if not skill.unlocked %}locked{% endif %}">
+                    <div class="skill-info">
+                        <span class="level-num">{{ skill.level }}</span>
+                        <span class="skill-name">{{ skill.name }}</span>
+                        {% if skill.unlocked %}
+                        <span class="mastery-badge {{ skill.mastery_level }}">{{ skill.mastery_level }}</span>
+                        {% else %}
+                        <span class="locked-badge">Locked</span>
+                        {% endif %}
+                    </div>
+                    {% if skill.unlocked %}
+                    <div class="skill-stats-row">
+                        <span>{{ skill.exercises_completed }} completed</span>
+                        <span>{{ skill.success_rate }}% accuracy</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ skill.progress_to_next.percentage or 0 }}%"></div>
+                    </div>
+                    <span class="progress-text">
+                        {% if skill.progress_to_next.at_max %}
+                            Max level reached!
+                        {% else %}
+                            {{ skill.progress_to_next.current }}/{{ skill.progress_to_next.required }} to {{ skill.progress_to_next.next_level }}
+                        {% endif %}
+                    </span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="section achievements-section">
+            <h2>Achievements ({{ achievement_progress.unlocked }}/{{ achievement_progress.total }})</h2>
+            <div class="progress-bar large">
+                <div class="progress-fill" style="width: {{ achievement_progress.percentage }}%"></div>
+            </div>
+
+            <div class="achievements-grid">
+                {% for achievement in achievements %}
+                <div class="achievement-card {% if achievement.unlocked %}unlocked{% else %}locked{% endif %}">
+                    <div class="achievement-icon">
+                        {% if achievement.unlocked %}
+                        <span class="icon-{{ achievement.icon }}">{{ achievement.icon }}</span>
+                        {% else %}
+                        <span class="icon-locked">?</span>
+                        {% endif %}
+                    </div>
+                    <div class="achievement-info">
+                        <h4>{{ achievement.name }}</h4>
+                        <p>{{ achievement.description }}</p>
+                        {% if achievement.unlocked %}
+                        <span class="unlock-date">Unlocked {{ achievement.unlocked_at }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if weak_areas %}
+        <div class="section weak-areas-section">
+            <h2>Areas for Improvement</h2>
+            <div class="weak-areas-list">
+                {% for area in weak_areas %}
+                <div class="weak-area-card">
+                    <h4>{{ area.skill }} (Level {{ area.level }})</h4>
+                    <p>{{ area.recommendation }}</p>
+                    {% if area.success_rate %}
+                    <span class="success-rate">{{ area.success_rate }}% success rate</span>
+                    {% endif %}
+                    <button class="btn btn-small" onclick="practiceArea({{ area.level }})">
+                        Practice Now
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="section history-section">
+            <h2>Recent Activity</h2>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Exercise</th>
+                        <th>Level</th>
+                        <th>Difficulty</th>
+                        <th>Result</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in history %}
+                    <tr class="{% if item.correct %}correct{% else %}incorrect{% endif %}">
+                        <td>{{ item.attempted_at }}</td>
+                        <td>{{ item.exercise_id }}</td>
+                        <td>{{ item.level }}</td>
+                        <td>{{ item.difficulty }}</td>
+                        <td>{% if item.correct %}Correct{% else %}Incorrect{% endif %}</td>
+                        <td>{{ item.time_taken_seconds }}s</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="export-section">
+        <button class="btn" onclick="exportProgress()">Export Progress</button>
+    </div>
+</div>
+
+<script>
+function practiceArea(level) {
+    fetch('/api/start-session', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            levels: [level],
+            difficulties: ['easy', 'medium', 'hard'],
+            count: 10
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/exercise';
+        }
+    });
+}
+
+function exportProgress() {
+    fetch('/api/export-progress')
+    .then(response => response.json())
+    .then(data => {
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'sql_progress_export.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+}
+</script>
+{% endblock %}

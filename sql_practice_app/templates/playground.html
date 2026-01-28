@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Playground - SQL Practice Generator{% endblock %}
+
+{% block content %}
+<div class="playground-page">
+    <div class="playground-header">
+        <h1>SQL Playground</h1>
+        <p>Free-form SQL practice with all available data</p>
+    </div>
+
+    <div class="playground-content">
+        <div class="playground-sidebar">
+            <h3>Available Tables</h3>
+            <div class="tables-accordion">
+                {% for table_name, table_info in schema.items() %}
+                <div class="table-item">
+                    <div class="table-header-small" onclick="togglePlaygroundTable('{{ table_name }}')">
+                        <span class="toggle-icon">+</span>
+                        {{ table_name }}
+                        <span class="row-count">({{ table_info.row_count }})</span>
+                    </div>
+                    <div class="table-details" id="table-{{ table_name }}" style="display: none;">
+                        <ul class="column-list">
+                            {% for col in table_info.columns %}
+                            <li class="{% if col.primary_key %}pk{% endif %}"
+                                onclick="insertColumn('{{ table_name }}', '{{ col.name }}')">
+                                {{ col.name }} <span class="type">{{ col.type }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <button class="btn btn-xs" onclick="insertTableName('{{ table_name }}')">
+                            Insert table name
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <h3>Quick Queries</h3>
+            <div class="quick-queries">
+                <button class="btn btn-xs" onclick="setQuery('SELECT * FROM customers LIMIT 10')">
+                    Sample customers
+                </button>
+                <button class="btn btn-xs" onclick="setQuery('SELECT * FROM products LIMIT 10')">
+                    Sample products
+                </button>
+                <button class="btn btn-xs" onclick="setQuery('SELECT * FROM orders LIMIT 10')">
+                    Sample orders
+                </button>
+                <button class="btn btn-xs" onclick="setQuery('SELECT name FROM sqlite_master WHERE type=\\'table\\'')">
+                    List all tables
+                </button>
+            </div>
+        </div>
+
+        <div class="playground-main">
+            <div class="editor-section">
+                <div class="editor-toolbar">
+                    <button class="btn btn-primary" onclick="executePlayground()">
+                        Execute (Ctrl+Enter)
+                    </button>
+                    <button class="btn" onclick="clearPlayground()">Clear</button>
+                    <button class="btn" onclick="formatPlayground()">Format</button>
+                </div>
+                <textarea id="playground-editor">SELECT * FROM </textarea>
+            </div>
+
+            <div class="results-section">
+                <div class="results-header">
+                    <h3>Results</h3>
+                    <span id="result-info"></span>
+                </div>
+                <div id="playground-results" class="results-container">
+                    <p class="results-placeholder">Execute a query to see results</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let playgroundEditor;
+
+document.addEventListener('DOMContentLoaded', function() {
+    playgroundEditor = CodeMirror.fromTextArea(document.getElementById('playground-editor'), {
+        mode: 'text/x-sql',
+        theme: 'dracula',
+        lineNumbers: true,
+        autofocus: true,
+        extraKeys: {
+            'Ctrl-Enter': executePlayground,
+            'Cmd-Enter': executePlayground
+        }
+    });
+    playgroundEditor.setSize(null, 300);
+});
+
+function togglePlaygroundTable(tableName) {
+    const details = document.getElementById(`table-${tableName}`);
+    const header = details.previousElementSibling;
+    const icon = header.querySelector('.toggle-icon');
+
+    if (details.style.display === 'none') {
+        details.style.display = 'block';
+        icon.textContent = '-';
+    } else {
+        details.style.display = 'none';
+        icon.textContent = '+';
+    }
+}
+
+function insertColumn(tableName, columnName) {
+    const pos = playgroundEditor.getCursor();
+    playgroundEditor.replaceRange(`${tableName}.${columnName}`, pos);
+    playgroundEditor.focus();
+}
+
+function insertTableName(tableName) {
+    const pos = playgroundEditor.getCursor();
+    playgroundEditor.replaceRange(tableName, pos);
+    playgroundEditor.focus();
+}
+
+function setQuery(query) {
+    playgroundEditor.setValue(query);
+    playgroundEditor.focus();
+}
+
+function executePlayground() {
+    const query = playgroundEditor.getValue().trim();
+    if (!query) {
+        document.getElementById('playground-results').innerHTML =
+            '<p class="error-message">Please enter a query</p>';
+        return;
+    }
+
+    document.getElementById('playground-results').innerHTML =
+        '<p class="loading">Executing...</p>';
+
+    fetch('/api/execute-playground', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({query: query})
+    })
+    .then(response => response.json())
+    .then(data => {
+        showPlaygroundResult(data);
+    })
+    .catch(err => {
+        document.getElementById('playground-results').innerHTML =
+            `<p class="error-message">Error: ${err.message}</p>`;
+    });
+}
+
+function showPlaygroundResult(data) {
+    const container = document.getElementById('playground-results');
+    const info = document.getElementById('result-info');
+
+    if (!data.success) {
+        container.innerHTML = `<div class="error-result">
+            <p class="error-message">${data.error}</p>
+            ${data.hints ? '<ul class="hints">' + data.hints.map(h => `<li>${h}</li>`).join('') + '</ul>' : ''}
+        </div>`;
+        info.textContent = '';
+        return;
+    }
+
+    info.textContent = `${data.row_count} rows in ${data.execution_time}s${data.truncated ? ' (truncated)' : ''}`;
+
+    if (data.results && data.results.length > 0) {
+        let html = '<table class="result-table"><thead><tr>';
+        const cols = Object.keys(data.results[0]);
+        cols.forEach(col => {
+            html += `<th>${col}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+
+        data.results.forEach(row => {
+            html += '<tr>';
+            cols.forEach(col => {
+                const val = row[col];
+                html += `<td>${val !== null ? val : 'NULL'}</td>`;
+            });
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    } else {
+        container.innerHTML = '<p class="no-results">Query executed successfully (no results to display)</p>';
+    }
+}
+
+function clearPlayground() {
+    playgroundEditor.setValue('SELECT * FROM ');
+    playgroundEditor.focus();
+}
+
+function formatPlayground() {
+    let query = playgroundEditor.getValue();
+    query = query.replace(/\s+/g, ' ');
+    query = query.replace(/ (FROM|WHERE|GROUP BY|HAVING|ORDER BY|LIMIT|JOIN|LEFT JOIN|RIGHT JOIN|INNER JOIN|ON|AND|OR) /gi,
+        '\n$1 ');
+    playgroundEditor.setValue(query);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Skills - SQL Practice Generator{% endblock %}
+
+{% block content %}
+<div class="skills-page">
+    <h1>Skill Tree</h1>
+    <p class="page-subtitle">Select topics to practice. Complete exercises to unlock new skills!</p>
+
+    <div class="session-config">
+        <h3>Start New Session</h3>
+
+        <div class="config-section">
+            <h4>Select Topics (click to toggle)</h4>
+            <div class="skill-selector">
+                {% for skill in skills %}
+                <div class="skill-option {% if not skill.unlocked %}locked{% endif %}"
+                     data-level="{{ skill.level }}"
+                     data-unlocked="{{ skill.unlocked|lower }}">
+                    <div class="skill-checkbox">
+                        <input type="checkbox" id="skill-{{ skill.level }}"
+                               {% if not skill.unlocked %}disabled{% endif %}
+                               {% if skill.unlocked %}checked{% endif %}>
+                    </div>
+                    <div class="skill-info">
+                        <div class="skill-header">
+                            <span class="skill-level-badge">{{ skill.level }}</span>
+                            <span class="skill-name">{{ skill.name }}</span>
+                            {% if skill.unlocked %}
+                            <span class="mastery-badge {{ skill.mastery_level }}">{{ skill.mastery_level }}</span>
+                            {% else %}
+                            <span class="lock-icon">Locked</span>
+                            {% endif %}
+                        </div>
+                        <p class="skill-desc">{{ skill.description }}</p>
+                        {% if skill.unlocked %}
+                        <div class="skill-stats">
+                            <span>{{ skill.exercises_completed }} completed</span>
+                            <span>{{ skill.success_rate }}% accuracy</span>
+                        </div>
+                        <div class="progress-bar small">
+                            <div class="progress-fill" style="width: {{ skill.progress_to_next.percentage or 0 }}%"></div>
+                        </div>
+                        {% else %}
+                        <p class="unlock-hint">Complete Level {{ skill.level - 1 }} to unlock</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="config-row">
+            <div class="config-section">
+                <h4>Difficulty</h4>
+                <div class="difficulty-selector">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="diff-easy" checked> Easy
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="diff-medium" checked> Medium
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="diff-hard" checked> Hard
+                    </label>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h4>Session Length</h4>
+                <div class="length-selector">
+                    <button class="length-btn" data-count="5">5</button>
+                    <button class="length-btn active" data-count="10">10</button>
+                    <button class="length-btn" data-count="20">20</button>
+                    <button class="length-btn" data-count="0">Unlimited</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h4>Data Scenarios (Optional)</h4>
+            <div class="scenario-selector">
+                <label class="checkbox-label">
+                    <input type="checkbox" class="scenario-check" value="ecommerce" checked> E-commerce
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" class="scenario-check" value="hr" checked> HR
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" class="scenario-check" value="finance" checked> Finance
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" class="scenario-check" value="social_media" checked> Social Media
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" class="scenario-check" value="healthcare" checked> Healthcare
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" class="scenario-check" value="education" checked> Education
+                </label>
+            </div>
+        </div>
+
+        <div class="session-preview">
+            <p id="session-preview-text">Session: 10 exercises, Levels 1-13, All difficulties</p>
+        </div>
+
+        <button class="btn btn-primary btn-large" id="start-session-btn">
+            Start Practice Session
+        </button>
+    </div>
+</div>
+
+<script>
+let selectedCount = 10;
+
+document.querySelectorAll('.length-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.length-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedCount = parseInt(btn.dataset.count) || 100;
+        updatePreview();
+    });
+});
+
+document.querySelectorAll('.skill-option').forEach(option => {
+    option.addEventListener('click', (e) => {
+        if (option.classList.contains('locked')) return;
+        const checkbox = option.querySelector('input[type="checkbox"]');
+        if (e.target !== checkbox) {
+            checkbox.checked = !checkbox.checked;
+        }
+        updatePreview();
+    });
+});
+
+document.querySelectorAll('#diff-easy, #diff-medium, #diff-hard, .scenario-check').forEach(cb => {
+    cb.addEventListener('change', updatePreview);
+});
+
+function updatePreview() {
+    const levels = [];
+    document.querySelectorAll('.skill-option input:checked').forEach(cb => {
+        const level = cb.closest('.skill-option').dataset.level;
+        levels.push(parseInt(level));
+    });
+
+    const difficulties = [];
+    if (document.getElementById('diff-easy').checked) difficulties.push('Easy');
+    if (document.getElementById('diff-medium').checked) difficulties.push('Medium');
+    if (document.getElementById('diff-hard').checked) difficulties.push('Hard');
+
+    const countText = selectedCount === 100 ? 'Unlimited' : selectedCount;
+    const levelText = levels.length === 0 ? 'No levels selected' :
+                     levels.length === 13 ? 'Levels 1-13' :
+                     `Level${levels.length > 1 ? 's' : ''} ${levels.join(', ')}`;
+    const diffText = difficulties.length === 3 ? 'All difficulties' : difficulties.join(', ');
+
+    document.getElementById('session-preview-text').textContent =
+        `Session: ${countText} exercises, ${levelText}, ${diffText}`;
+}
+
+document.getElementById('start-session-btn').addEventListener('click', () => {
+    const levels = [];
+    document.querySelectorAll('.skill-option input:checked').forEach(cb => {
+        const level = cb.closest('.skill-option').dataset.level;
+        levels.push(parseInt(level));
+    });
+
+    if (levels.length === 0) {
+        alert('Please select at least one skill level');
+        return;
+    }
+
+    const difficulties = [];
+    if (document.getElementById('diff-easy').checked) difficulties.push('easy');
+    if (document.getElementById('diff-medium').checked) difficulties.push('medium');
+    if (document.getElementById('diff-hard').checked) difficulties.push('hard');
+
+    if (difficulties.length === 0) {
+        alert('Please select at least one difficulty');
+        return;
+    }
+
+    const scenarios = [];
+    document.querySelectorAll('.scenario-check:checked').forEach(cb => {
+        scenarios.push(cb.value);
+    });
+
+    fetch('/api/start-session', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            levels: levels,
+            difficulties: difficulties,
+            scenarios: scenarios.length > 0 ? scenarios : null,
+            count: selectedCount
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/exercise';
+        } else {
+            alert('Error starting session: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(err => {
+        alert('Error: ' + err.message);
+    });
+});
+
+updatePreview();
+</script>
+{% endblock %}

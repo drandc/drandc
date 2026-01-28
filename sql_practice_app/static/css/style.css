@@ -1,0 +1,1304 @@
+/* SQL Practice Generator - Main Stylesheet */
+
+/* ============== Reset & Base ============== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #4a90d9;
+    --primary-dark: #357abd;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --background-color: #f5f7fa;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+    --shadow: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
+    --radius: 8px;
+    --transition: all 0.2s ease;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body.dark {
+    --background-color: #1a1a2e;
+    --card-background: #16213e;
+    --text-color: #e4e4e4;
+    --text-muted: #a0a0a0;
+    --border-color: #0f3460;
+}
+
+/* ============== Navigation ============== */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+}
+
+.nav-brand a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-link {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+
+.nav-link:hover, .nav-link.active {
+    color: white;
+    background: rgba(255,255,255,0.2);
+}
+
+/* ============== Main Content ============== */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ============== Buttons ============== */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: var(--transition);
+    text-align: center;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-success {
+    background: var(--success-color);
+    color: white;
+}
+
+.btn-warning {
+    background: var(--warning-color);
+    color: #333;
+}
+
+.btn-danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn-small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.btn-xs {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.75rem;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+}
+
+.btn-link {
+    background: none;
+    color: var(--primary-color);
+}
+
+.btn-action {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.btn-action:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-hint {
+    background: #f8f9fa;
+    border: 1px solid var(--warning-color);
+    color: #856404;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ============== Cards ============== */
+.stat-card {
+    background: var(--card-background);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+.stat-card .stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-card .stat-label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.stat-card.large .stat-value {
+    font-size: 3rem;
+}
+
+/* ============== Dashboard ============== */
+.dashboard h1 {
+    margin-bottom: 0.5rem;
+}
+
+.welcome-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.motivation {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 1.1rem;
+}
+
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.action-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.suggestion-card, .quick-actions {
+    background: var(--card-background);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.suggestion-card h3, .quick-actions h3 {
+    margin-bottom: 1rem;
+}
+
+.suggestion-skill {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.suggestion-reason {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.skill-tree-preview {
+    background: var(--card-background);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.skill-node {
+    background: #f8f9fa;
+    border-radius: var(--radius);
+    padding: 1rem;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: var(--transition);
+}
+
+.skill-node.unlocked {
+    border-color: var(--success-color);
+}
+
+.skill-node.locked {
+    opacity: 0.5;
+    border-color: var(--border-color);
+}
+
+.skill-level {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.skill-name {
+    font-weight: 500;
+}
+
+.skill-locked {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+/* ============== Skills Page ============== */
+.skills-page h1 {
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.session-config {
+    background: var(--card-background);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.config-section {
+    margin-bottom: 1.5rem;
+}
+
+.config-section h4 {
+    margin-bottom: 0.75rem;
+}
+
+.config-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.skill-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.skill-option {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: var(--radius);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.skill-option:hover:not(.locked) {
+    border-color: var(--primary-color);
+}
+
+.skill-option.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.skill-option input {
+    width: 20px;
+    height: 20px;
+}
+
+.skill-info {
+    flex: 1;
+}
+
+.skill-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.skill-level-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.skill-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.skill-stats {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.skill-stats span {
+    margin-right: 1rem;
+}
+
+.unlock-hint {
+    font-size: 0.75rem;
+    color: var(--warning-color);
+}
+
+.lock-icon {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+.difficulty-selector, .scenario-selector {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.length-selector {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.length-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--border-color);
+    background: var(--card-background);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.length-btn.active {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.session-preview {
+    background: #e8f4fd;
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+/* ============== Exercise Page ============== */
+.exercise-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-background);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.progress-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.exercise-counter {
+    font-weight: bold;
+}
+
+.level-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius);
+}
+
+.difficulty-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius);
+}
+
+.difficulty-badge.easy {
+    background: #d4edda;
+    color: #155724;
+}
+
+.difficulty-badge.medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.difficulty-badge.hard {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.exercise-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.problem-section {
+    background: var(--card-background);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.problem-section h2 {
+    margin-bottom: 0.75rem;
+}
+
+.problem-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.schema-section {
+    background: var(--card-background);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.schema-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.schema-header h3 {
+    margin: 0;
+}
+
+.schema-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.table-schema {
+    margin-bottom: 0.5rem;
+}
+
+.table-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.table-header:hover {
+    background: #e9ecef;
+}
+
+.toggle-icon {
+    width: 20px;
+    text-align: center;
+    font-family: monospace;
+}
+
+.table-name {
+    font-weight: 500;
+}
+
+.row-count {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.table-content {
+    padding: 0.5rem 1rem;
+    border-left: 2px solid var(--border-color);
+    margin-left: 0.5rem;
+}
+
+.columns-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.column-item {
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.column-item.pk .col-name {
+    font-weight: bold;
+}
+
+.col-name {
+    color: var(--text-color);
+}
+
+.col-type {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+.col-pk {
+    background: var(--primary-color);
+    color: white;
+    padding: 0 0.25rem;
+    border-radius: 2px;
+    font-size: 0.6rem;
+    margin-left: 0.25rem;
+}
+
+.sample-data {
+    margin-top: 0.5rem;
+    overflow-x: auto;
+}
+
+.data-table, .result-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.data-table th, .data-table td,
+.result-table th, .result-table td {
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.data-table th, .result-table th {
+    background: #f8f9fa;
+    font-weight: 500;
+}
+
+.query-section {
+    background: var(--card-background);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.query-section h3 {
+    margin-bottom: 0.75rem;
+}
+
+.editor-container {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.CodeMirror {
+    height: auto;
+    min-height: 150px;
+    font-size: 14px;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.results-section {
+    background: var(--card-background);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.results-section h3 {
+    margin-bottom: 0.75rem;
+}
+
+.results-container {
+    max-height: 400px;
+    overflow: auto;
+}
+
+.results-placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.error-result {
+    background: #f8d7da;
+    padding: 1rem;
+    border-radius: var(--radius);
+}
+
+.error-message {
+    color: var(--danger-color);
+}
+
+.no-results {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.truncated-notice {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.feedback-section {
+    background: var(--card-background);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.feedback-success {
+    background: #d4edda;
+    padding: 1rem;
+    border-radius: var(--radius);
+    color: #155724;
+}
+
+.feedback-error {
+    background: #f8d7da;
+    padding: 1rem;
+    border-radius: var(--radius);
+    color: #721c24;
+}
+
+.feedback-hints {
+    margin-top: 0.5rem;
+    padding-left: 1.5rem;
+}
+
+.execution-time {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+.exercise-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: var(--card-background);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.hints-container {
+    background: #fff3cd;
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin-top: 0.5rem;
+}
+
+.hint {
+    margin-bottom: 0.5rem;
+}
+
+.hint-label {
+    font-weight: bold;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* ============== Modals ============== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: var(--radius);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.solution-code {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 1rem;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    font-family: monospace;
+    margin-bottom: 1rem;
+}
+
+.achievement-content {
+    text-align: center;
+}
+
+.achievement-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+/* ============== Playground ============== */
+.playground-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.playground-header {
+    margin-bottom: 1rem;
+}
+
+.playground-content {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 1rem;
+}
+
+.playground-sidebar {
+    background: var(--card-background);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    height: fit-content;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.playground-sidebar h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.table-header-small {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.table-header-small:hover {
+    background: #f8f9fa;
+}
+
+.table-details {
+    padding-left: 1.5rem;
+}
+
+.column-list {
+    list-style: none;
+    font-size: 0.75rem;
+}
+
+.column-list li {
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.column-list li:hover {
+    background: #e9ecef;
+}
+
+.column-list li.pk {
+    font-weight: bold;
+}
+
+.column-list .type {
+    color: var(--text-muted);
+}
+
+.quick-queries {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.playground-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.editor-section {
+    background: var(--card-background);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.editor-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+#result-info {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+/* ============== Stats Page ============== */
+.stats-page h1 {
+    margin-bottom: 1.5rem;
+}
+
+.stats-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section {
+    background: var(--card-background);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.section h2 {
+    margin-bottom: 1rem;
+}
+
+.skills-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.skill-row {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: var(--radius);
+}
+
+.skill-row.locked {
+    opacity: 0.6;
+}
+
+.skill-stats-row {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0.5rem 0;
+}
+
+.skill-stats-row span {
+    margin-right: 1rem;
+}
+
+.progress-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.achievement-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: var(--radius);
+    border: 2px solid transparent;
+}
+
+.achievement-card.unlocked {
+    border-color: var(--success-color);
+}
+
+.achievement-card.locked {
+    opacity: 0.6;
+}
+
+.achievement-card .achievement-icon {
+    font-size: 2rem;
+}
+
+.achievement-info h4 {
+    margin-bottom: 0.25rem;
+}
+
+.achievement-info p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.unlock-date {
+    font-size: 0.75rem;
+    color: var(--success-color);
+}
+
+.weak-areas-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.weak-area-card {
+    padding: 1rem;
+    background: #fff3cd;
+    border-radius: var(--radius);
+}
+
+.weak-area-card h4 {
+    margin-bottom: 0.5rem;
+}
+
+.weak-area-card p {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.success-rate {
+    font-size: 0.75rem;
+    color: var(--danger-color);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th, .history-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.history-table tr.correct {
+    background: rgba(40, 167, 69, 0.1);
+}
+
+.history-table tr.incorrect {
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.export-section {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+/* ============== Settings Page ============== */
+.settings-page h1 {
+    margin-bottom: 1.5rem;
+}
+
+.settings-form {
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.setting-group {
+    margin-bottom: 2rem;
+}
+
+.setting-group h3 {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.setting-item {
+    margin-bottom: 1rem;
+}
+
+.setting-item label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.setting-item select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    min-width: 200px;
+}
+
+.setting-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.shortcuts-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+}
+
+.shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: var(--radius);
+}
+
+.shortcut-key {
+    font-family: monospace;
+    background: #e9ecef;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.danger-zone {
+    background: #f8d7da;
+    padding: 2rem;
+    border-radius: var(--radius);
+    border: 2px solid var(--danger-color);
+}
+
+.danger-zone h3 {
+    color: var(--danger-color);
+    margin-bottom: 0.5rem;
+}
+
+.danger-zone p {
+    margin-bottom: 1rem;
+}
+
+/* ============== Error Page ============== */
+.error-page {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.error-page h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.error-page .error-message {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+/* ============== Progress Bars ============== */
+.progress-bar {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+}
+
+.progress-bar.small {
+    height: 4px;
+}
+
+.progress-bar.large {
+    height: 12px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* ============== Mastery Badges ============== */
+.mastery-badge {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    text-transform: capitalize;
+}
+
+.mastery-badge.none {
+    background: #e9ecef;
+    color: var(--text-muted);
+}
+
+.mastery-badge.bronze {
+    background: #cd7f32;
+    color: white;
+}
+
+.mastery-badge.silver {
+    background: #c0c0c0;
+    color: #333;
+}
+
+.mastery-badge.gold {
+    background: #ffd700;
+    color: #333;
+}
+
+.mastery-badge.platinum {
+    background: linear-gradient(135deg, #e5e4e2, #b0b0b0);
+    color: #333;
+}
+
+.locked-badge {
+    background: #e9ecef;
+    color: var(--text-muted);
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+/* ============== Footer ============== */
+.footer {
+    background: var(--card-background);
+    padding: 1rem 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ============== Loading ============== */
+.loading {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* ============== Responsive ============== */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .action-section {
+        grid-template-columns: 1fr;
+    }
+
+    .config-row {
+        grid-template-columns: 1fr;
+    }
+
+    .playground-content {
+        grid-template-columns: 1fr;
+    }
+
+    .playground-sidebar {
+        max-height: none;
+    }
+
+    .stats-overview {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

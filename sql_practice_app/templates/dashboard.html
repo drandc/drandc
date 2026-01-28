@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SQL Practice Generator{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="welcome-section">
+        <h1>Welcome to SQL Practice Generator</h1>
+        <p class="motivation">{{ motivation }}</p>
+    </div>
+
+    <div class="stats-overview">
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_exercises }}</div>
+            <div class="stat-label">Total Exercises</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.accuracy }}%</div>
+            <div class="stat-label">Accuracy</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.current_streak }}</div>
+            <div class="stat-label">Current Streak</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.day_streak }}</div>
+            <div class="stat-label">Day Streak</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.unlocked_levels }}/{{ stats.total_levels }}</div>
+            <div class="stat-label">Levels Unlocked</div>
+        </div>
+    </div>
+
+    <div class="action-section">
+        <div class="suggestion-card">
+            <h3>Suggested Next</h3>
+            <p class="suggestion-skill">{{ suggestion.skill }} (Level {{ suggestion.level }})</p>
+            <p class="suggestion-reason">{{ suggestion.reason }}</p>
+            <a href="/skills" class="btn btn-primary">Start Practice</a>
+        </div>
+
+        <div class="quick-actions">
+            <h3>Quick Start</h3>
+            <button class="btn btn-action" onclick="quickStart(1)">Foundation (Level 1)</button>
+            <button class="btn btn-action" onclick="quickStart([1,2,3])">Beginner Mix</button>
+            <button class="btn btn-action" onclick="quickStart([4,5])">Join Practice</button>
+            <a href="/playground" class="btn btn-secondary">Free Practice</a>
+        </div>
+    </div>
+
+    <div class="skill-tree-preview">
+        <h3>Skill Tree Overview</h3>
+        <div class="skills-grid">
+            {% for level, info in skill_levels.items() %}
+            <div class="skill-node {% if stats.skills[loop.index0].unlocked %}unlocked{% else %}locked{% endif %}">
+                <div class="skill-level">{{ level }}</div>
+                <div class="skill-name">{{ info.name }}</div>
+                {% if stats.skills[loop.index0].unlocked %}
+                <div class="skill-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ stats.skills[loop.index0].progress_to_next.percentage or 0 }}%"></div>
+                    </div>
+                    <span class="mastery-badge {{ stats.skills[loop.index0].mastery_level }}">
+                        {{ stats.skills[loop.index0].mastery_level }}
+                    </span>
+                </div>
+                {% else %}
+                <div class="skill-locked">Locked</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <a href="/skills" class="btn btn-link">View Full Skill Tree</a>
+    </div>
+
+    {% if daily_challenge %}
+    <div class="daily-challenge">
+        <h3>Daily Challenge</h3>
+        <div class="challenge-card">
+            <p class="challenge-desc">{{ daily_challenge.challenge.description }}</p>
+            <p class="challenge-reward">Reward: {{ daily_challenge.challenge.reward }}</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function quickStart(levels) {
+    if (!Array.isArray(levels)) {
+        levels = [levels];
+    }
+
+    fetch('/api/start-session', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            levels: levels,
+            difficulties: ['easy', 'medium', 'hard'],
+            count: 10
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/exercise';
+        }
+    });
+}
+</script>
+{% endblock %}

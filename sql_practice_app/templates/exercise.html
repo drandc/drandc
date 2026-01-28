@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+
+{% block title %}Exercise - SQL Practice Generator{% endblock %}
+
+{% block content %}
+<div class="exercise-page">
+    <div class="exercise-header">
+        <div class="progress-info">
+            <span class="exercise-counter">Exercise {{ session_status.current_index + 1 }}/{{ session_status.total }}</span>
+            <span class="level-badge">Level {{ exercise.level }}: {{ exercise.level_name }}</span>
+            <span class="difficulty-badge {{ exercise.difficulty }}">{{ exercise.difficulty|title }}</span>
+        </div>
+        <div class="session-stats">
+            <span>Correct: {{ session_status.correct }}/{{ session_status.completed }}</span>
+            <span>Accuracy: {{ session_status.accuracy }}%</span>
+        </div>
+    </div>
+
+    <div class="exercise-content">
+        <div class="problem-section">
+            <h2>Problem</h2>
+            <p class="problem-text">{{ exercise.problem }}</p>
+        </div>
+
+        <div class="schema-section">
+            <div class="schema-header">
+                <h3>Database Schema</h3>
+                <div class="schema-actions">
+                    <button class="btn btn-small" onclick="toggleAllSchema(true)">Expand All</button>
+                    <button class="btn btn-small" onclick="toggleAllSchema(false)">Collapse All</button>
+                </div>
+            </div>
+            <div class="tables-list">
+                {% for table_name, table_info in schema.items() %}
+                <div class="table-schema" data-table="{{ table_name }}">
+                    <div class="table-header" onclick="toggleTable('{{ table_name }}')">
+                        <span class="toggle-icon">+</span>
+                        <span class="table-name">{{ table_name }}</span>
+                        <span class="row-count">({{ table_info.row_count }} rows)</span>
+                    </div>
+                    <div class="table-content" style="display: none;">
+                        <div class="columns-list">
+                            {% for col in table_info.columns %}
+                            <div class="column-item">
+                                <span class="col-name {% if col.primary_key %}pk{% endif %}">{{ col.name }}</span>
+                                <span class="col-type">{{ col.type }}</span>
+                                {% if col.primary_key %}<span class="col-pk">PK</span>{% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="btn btn-small" onclick="showSampleData('{{ table_name }}')">
+                            Show Sample Data
+                        </button>
+                        <div class="sample-data" id="sample-{{ table_name }}" style="display: none;">
+                            {% if table_info.sample_data %}
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        {% for col in table_info.columns %}
+                                        <th>{{ col.name }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in table_info.sample_data %}
+                                    <tr>
+                                        {% for col in table_info.columns %}
+                                        <td>{{ row[col.name] if row[col.name] is not none else 'NULL' }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="query-section">
+            <h3>Your SQL Query</h3>
+            <div class="editor-container">
+                <textarea id="sql-editor">SELECT </textarea>
+            </div>
+            <div class="editor-actions">
+                <button class="btn btn-primary" id="run-btn" onclick="runQuery()">
+                    Run Query (Ctrl+Enter)
+                </button>
+                <button class="btn btn-secondary" onclick="clearEditor()">Clear</button>
+                <button class="btn btn-secondary" onclick="formatQuery()">Format</button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h3>Results</h3>
+            <div id="results-container" class="results-container">
+                <p class="results-placeholder">Run your query to see results</p>
+            </div>
+        </div>
+
+        <div class="feedback-section" id="feedback-section" style="display: none;">
+            <div class="feedback-content" id="feedback-content"></div>
+        </div>
+    </div>
+
+    <div class="exercise-actions">
+        <div class="hint-section">
+            <button class="btn btn-hint" id="hint-btn" onclick="getHint()">
+                Hint ({{ exercise.hints|length }} available)
+            </button>
+            <div id="hints-container" class="hints-container" style="display: none;"></div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="showSolution()">Show Solution</button>
+            <button class="btn btn-warning" onclick="skipExercise()">Skip</button>
+            <button class="btn btn-primary" id="next-btn" onclick="nextExercise()" disabled>
+                Next Exercise
+            </button>
+        </div>
+    </div>
+
+    <div id="solution-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Solution</h3>
+            <pre class="solution-code" id="solution-code"></pre>
+            <p class="solution-explanation" id="solution-explanation"></p>
+            <button class="btn btn-primary" onclick="closeSolutionModal()">Close</button>
+        </div>
+    </div>
+
+    <div id="achievement-modal" class="modal" style="display: none;">
+        <div class="modal-content achievement-content">
+            <h2>Achievement Unlocked!</h2>
+            <div id="achievement-details"></div>
+            <button class="btn btn-primary" onclick="closeAchievementModal()">Continue</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let editor;
+let currentHintLevel = 0;
+let exerciseId = '{{ exercise.id }}';
+let attempts = 0;
+let hintsUsed = 0;
+let exerciseCorrect = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize CodeMirror
+    editor = CodeMirror.fromTextArea(document.getElementById('sql-editor'), {
+        mode: 'text/x-sql',
+        theme: 'dracula',
+        lineNumbers: true,
+        autofocus: true,
+        extraKeys: {
+            'Ctrl-Enter': runQuery,
+            'Cmd-Enter': runQuery,
+            'Ctrl-H': getHint,
+            'Ctrl-N': nextExercise,
+            'Ctrl-S': showSolution
+        }
+    });
+    editor.setSize(null, 200);
+});
+
+function toggleTable(tableName) {
+    const schema = document.querySelector(`[data-table="${tableName}"]`);
+    const content = schema.querySelector('.table-content');
+    const icon = schema.querySelector('.toggle-icon');
+
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.textContent = '-';
+    } else {
+        content.style.display = 'none';
+        icon.textContent = '+';
+    }
+}
+
+function toggleAllSchema(expand) {
+    document.querySelectorAll('.table-schema').forEach(schema => {
+        const content = schema.querySelector('.table-content');
+        const icon = schema.querySelector('.toggle-icon');
+        content.style.display = expand ? 'block' : 'none';
+        icon.textContent = expand ? '-' : '+';
+    });
+}
+
+function showSampleData(tableName) {
+    const sample = document.getElementById(`sample-${tableName}`);
+    sample.style.display = sample.style.display === 'none' ? 'block' : 'none';
+}
+
+function runQuery() {
+    const query = editor.getValue().trim();
+    if (!query) {
+        showResult({error: 'Please enter a query'});
+        return;
+    }
+
+    attempts++;
+
+    fetch('/api/validate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            query: query,
+            exercise_id: exerciseId,
+            hints_used: hintsUsed,
+            attempts: attempts
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showResult(data.result);
+            showFeedback(data.result);
+
+            if (data.result.is_correct) {
+                exerciseCorrect = true;
+                document.getElementById('next-btn').disabled = false;
+
+                // Check for achievements
+                if (data.result.gamification && data.result.gamification.new_achievements) {
+                    data.result.gamification.new_achievements.forEach(ach => {
+                        showAchievement(ach);
+                    });
+                }
+            }
+        } else {
+            showResult({error: data.error});
+        }
+    })
+    .catch(err => {
+        showResult({error: 'Network error: ' + err.message});
+    });
+}
+
+function showResult(result) {
+    const container = document.getElementById('results-container');
+
+    if (result.error) {
+        container.innerHTML = `<div class="error-result"><p class="error-message">${result.error}</p></div>`;
+        return;
+    }
+
+    if (result.user_results && result.user_results.length > 0) {
+        let html = '<table class="result-table"><thead><tr>';
+        const cols = Object.keys(result.user_results[0]);
+        cols.forEach(col => {
+            html += `<th>${col}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+
+        result.user_results.slice(0, 50).forEach(row => {
+            html += '<tr>';
+            cols.forEach(col => {
+                const val = row[col];
+                html += `<td>${val !== null ? val : 'NULL'}</td>`;
+            });
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+
+        if (result.user_results.length > 50) {
+            html += `<p class="truncated-notice">Showing 50 of ${result.user_results.length} rows</p>`;
+        }
+
+        container.innerHTML = html;
+    } else {
+        container.innerHTML = '<p class="no-results">Query returned no results</p>';
+    }
+}
+
+function showFeedback(result) {
+    const section = document.getElementById('feedback-section');
+    const content = document.getElementById('feedback-content');
+
+    let statusClass = result.is_correct ? 'success' : 'error';
+    let html = `<div class="feedback-${statusClass}">
+        <h4>${result.message}</h4>
+    `;
+
+    if (result.hints && result.hints.length > 0) {
+        html += '<ul class="feedback-hints">';
+        result.hints.forEach(hint => {
+            html += `<li>${hint}</li>`;
+        });
+        html += '</ul>';
+    }
+
+    if (result.execution_time) {
+        html += `<p class="execution-time">Execution time: ${result.execution_time}s</p>`;
+    }
+
+    html += '</div>';
+
+    content.innerHTML = html;
+    section.style.display = 'block';
+}
+
+function getHint() {
+    currentHintLevel++;
+    hintsUsed = currentHintLevel;
+
+    fetch('/api/hint', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({hint_level: currentHintLevel})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const container = document.getElementById('hints-container');
+            container.style.display = 'block';
+
+            let html = '';
+            data.hints.forEach((hint, i) => {
+                html += `<div class="hint">
+                    <span class="hint-label">Hint ${i + 1}:</span>
+                    <span class="hint-text">${hint}</span>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+
+            if (currentHintLevel >= data.total_hints) {
+                document.getElementById('hint-btn').disabled = true;
+                document.getElementById('hint-btn').textContent = 'No more hints';
+            } else {
+                document.getElementById('hint-btn').textContent =
+                    `Next Hint (${data.total_hints - currentHintLevel} remaining)`;
+            }
+        }
+    });
+}
+
+function showSolution() {
+    fetch('/api/solution')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('solution-code').textContent = data.solution;
+            document.getElementById('solution-explanation').textContent = data.explanation;
+            document.getElementById('solution-modal').style.display = 'flex';
+        }
+    });
+}
+
+function closeSolutionModal() {
+    document.getElementById('solution-modal').style.display = 'none';
+}
+
+function skipExercise() {
+    fetch('/api/next-exercise', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({skip: true})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.session_complete) {
+            window.location.href = '/stats';
+        } else {
+            window.location.reload();
+        }
+    });
+}
+
+function nextExercise() {
+    if (!exerciseCorrect) return;
+
+    fetch('/api/next-exercise', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({skip: false})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.session_complete) {
+            alert(`Session complete! You got ${data.summary.correct}/${data.summary.total} correct (${data.summary.accuracy}%)`);
+            window.location.href = '/stats';
+        } else {
+            window.location.reload();
+        }
+    });
+}
+
+function clearEditor() {
+    editor.setValue('SELECT ');
+    editor.focus();
+}
+
+function formatQuery() {
+    // Simple formatting - add newlines after major keywords
+    let query = editor.getValue();
+    query = query.replace(/\s+/g, ' ');
+    query = query.replace(/ (FROM|WHERE|GROUP BY|HAVING|ORDER BY|LIMIT|JOIN|LEFT JOIN|RIGHT JOIN|INNER JOIN|ON|AND|OR) /gi,
+        '\n$1 ');
+    editor.setValue(query);
+}
+
+function showAchievement(achievement) {
+    const modal = document.getElementById('achievement-modal');
+    const details = document.getElementById('achievement-details');
+
+    details.innerHTML = `
+        <div class="achievement-icon">${achievement.icon || 'trophy'}</div>
+        <h3>${achievement.name}</h3>
+        <p>${achievement.description}</p>
+    `;
+
+    modal.style.display = 'flex';
+}
+
+function closeAchievementModal() {
+    document.getElementById('achievement-modal').style.display = 'none';
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSolutionModal();
+        closeAchievementModal();
+    }
+});
+</script>
+{% endblock %}
